@@ -2,7 +2,6 @@
 
 use warnings;
 use strict;
-use Data::Dumper;
 
 my($score)=0;
 
