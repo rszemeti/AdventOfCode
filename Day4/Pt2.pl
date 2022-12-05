@@ -6,10 +6,8 @@ use strict;
 my($score)=0;
 
 while (<DATA>) {
-  my($s1,$f1,$s2,$f2) = $_ =~ /(\d+)-(\d+),(\d+)-(\d+)/;
-  if(($f1>=$s2)&&($s1<=$f2)){
-    $score++;
-  } 
+  my($s1,$f1,$s2,$f2) = $_ =~ /(\d+)/g;
+  ($f1>=$s2)&&($s1<=$f2)&&$score++;
 }
 
 print $score;
