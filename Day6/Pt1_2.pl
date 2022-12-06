@@ -13,9 +13,7 @@ my($len)=4;
 
 for(0..(length($str)-$len)){
   my(%symbols);
-  map {
-    $symbols{$_}++;
-  } split(//,substr($str,$_,$len));
+  map { $symbols{$_}++;} split(//,substr($str,$_,$len));
  if(scalar keys %symbols == $len){
    print $_+$len;
    last;
