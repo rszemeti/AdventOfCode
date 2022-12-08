@@ -20,34 +20,32 @@ my($width)=$#{$trees[0]};
 my($height)=$#trees;
 
 # walk the grid
-my(@up,@down);
 for my $i (0..$height){
-  my($left,$right)=(-1,-1);
   for my $j (0..$width){
-    if(! defined $up[$j]){ 
-      $up[$j]=-1;
-      $down[$j]=-1;
+    check($i,$j,0,1);
+    check($i,$j,0,-1);
+    check($i,$j,1,0);
+    check($i,$j,-1,0);
+  }
+}
+
+# starting point, then direction of travel in x and y
+sub check{
+  my($i,$j,$x,$y)=@_;
+
+  my($view)=0;
+  my($ci,$cj)=($i,$j);
+  my($visible)=1;
+  while(($ci>0)&&($ci<$height)&&($cj>0)&&($cj<$width)){ # bounds check
+    $ci+=$y;
+    $cj+=$x;
+    if($trees[$ci][$cj]->{height} >= $trees[$i][$j]->{height}){
+      $visible=0;
+      last;
     }
-    # check left mark tree if visible and update the horizon
-    if($trees[$i][$j]->{height} > $left){
-      $trees[$i][$j]->{visible}=1;
-      $left = $trees[$i][$j]->{height};
-    }
-    #check right
-    if($trees[$i][$width-$j]->{height} > $right){
-      $trees[$i][$width-$j]->{visible}=1;
-      $right = $trees[$i][$width-$j]->{height};
-    }
-    # now check if visible from top looking down
-    if($trees[$i][$j]->{height} > $down[$j]){
-      $trees[$i][$j]->{visible}=1;
-      $down[$j] = $trees[$i][$j]->{height};
-    }
-    # and from bottom looking up, this is actually a different row, but it makes sense to do it in the same loop
-    if($trees[$height-$i][$j]->{height} > $up[$j]){
-      $trees[$height-$i][$j]->{visible}=1;
-      $up[$j] = $trees[$height-$i][$j]->{height};
-    }
+  }
+  if($visible){
+    $trees[$i][$j]->{visible} = 1;
   }
 }
 
