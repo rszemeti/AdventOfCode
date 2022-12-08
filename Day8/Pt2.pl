@@ -22,55 +22,28 @@ my($height)=$#trees;
 # walk the grid
 for my $i (0..$height){
   for my $j (0..$width){
-  
-    #check up
-    my($view)=0;
-    my($u)=$i;
-    while($u>0){
-      $u--;
-      $view++;
-      if($trees[$u][$j]->{height} >= $trees[$i][$j]->{height}){
-        last;
-      }
-    }
-    $trees[$i][$j]->{score} *= $view;
-    
-    #check dn
-    $view=0;
-    $u=$i;
-    while($u<$height){
-      $u++;
-      $view++;
-      if($trees[$u][$j]->{height} >= $trees[$i][$j]->{height}){
-        last;
-      }
-    }
-    $trees[$i][$j]->{score} *= $view;
-    
-    #check left
-    $view=0;
-    $u=$j;
-    while($u>0){
-      $u--;
-      $view++;
-      if($trees[$i][$u]->{height} >= $trees[$i][$j]->{height}){
-        last;
-      }
-    }
-    $trees[$i][$j]->{score} *= $view;
-    
-    #check right
-    $view=0;
-    $u=$j;
-    while($u<$width){
-      $u++;
-      $view++;
-      if($trees[$i][$u]->{height} >= $trees[$i][$j]->{height}){
-        last;
-      }
-    }
-    $trees[$i][$j]->{score} *= $view;  
+    check($i,$j,0,1);
+    check($i,$j,0,-1);
+    check($i,$j,1,0);
+    check($i,$j,-1,0);
   }
+}
+
+# starting point, then direction of travel in x and y
+sub check{
+  my($i,$j,$x,$y)=@_;
+
+  my($view)=0;
+  my($ci,$cj)=($i,$j);
+  while(($ci>0)&&($ci<$height)&&($cj>0)&&($cj<$width)){
+      $ci+=$y;
+      $cj+=$x;
+      $view++;
+      if($trees[$ci][$cj]->{height} >= $trees[$i][$j]->{height}){
+        last;
+      }
+    }
+    $trees[$i][$j]->{score} *= $view;
 }
 
 my($max)=0;
