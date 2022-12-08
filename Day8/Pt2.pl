@@ -35,15 +35,15 @@ sub check{
 
   my($view)=0;
   my($ci,$cj)=($i,$j);
-  while(($ci>0)&&($ci<$height)&&($cj>0)&&($cj<$width)){
-      $ci+=$y;
-      $cj+=$x;
-      $view++;
-      if($trees[$ci][$cj]->{height} >= $trees[$i][$j]->{height}){
-        last;
-      }
+  while(($ci>0)&&($ci<$height)&&($cj>0)&&($cj<$width)){ # bounds check
+    $ci+=$y;
+    $cj+=$x;
+    $view++;
+    if($trees[$ci][$cj]->{height} >= $trees[$i][$j]->{height}){
+      last;
     }
-    $trees[$i][$j]->{score} *= $view;
+  }
+  $trees[$i][$j]->{score} *= $view;
 }
 
 my($max)=0;
