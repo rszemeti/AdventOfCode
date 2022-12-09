@@ -63,8 +63,11 @@ sub moveTail{
   
   my(@move)=(0,0);
   
+  # do we need an x axis move?
   if($xoff > 1){
+    # yes, in + direction;
     $move[0] =1;
+    # do wee need to make that into a diagonal move? if so, choose the righty shift;
     if($yoff > 0){
       $move[1] =1;
     }
@@ -72,6 +75,8 @@ sub moveTail{
       $move[1] =-1;
     }
   }
+  
+  # rinse and repeat for the other possibilities in x
   if($xoff < -1){
     $move[0]=-1;
         if($yoff > 0){
@@ -81,6 +86,8 @@ sub moveTail{
       $move[1] =-1;
     }
   }
+  
+  # repeat the same logic in Y .. 
   if($yoff > 1){
     $move[1] =1;
     if($xoff > 0){
@@ -103,6 +110,7 @@ sub moveTail{
   $t[$knot][0]+=$move[0];
   $t[$knot][1]+=$move[1];
 
+  # check if we made our start point far enough away from the -ve edges
   if($t[$knot][0]<0 || $t[$knot][1]<0){
       print "exceeded bounds";
       exit 0;
