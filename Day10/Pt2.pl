@@ -19,16 +19,11 @@ my($display)="";
 my($col)=(0);
 
 foreach(0..$#sigs){
-  my($i)=$_;
   if($col==40){
     $display .= "\n";
     $col=0;
   }
-  if(abs($col-$sigs[$i])<=1){
-    $display.="#";
-  }else{
-    $display.=" ";
-  }
+  $display .= (abs($col-$sigs[$_])<=1)?"#":" ";
   $col++;
 }
 
