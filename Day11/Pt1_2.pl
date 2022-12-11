@@ -3,19 +3,15 @@
 use warnings;
 use strict;
 
-use Data::Dumper;
-
 my (@monkeys);
 
 # autobots assemble!
-my($monkeyId);
 my($monkey);
 
 while(<DATA>){
   my($line)=$_;
   chomp;
   if($line=~/Monkey\s+(\d+)/){
-     $monkeyId=$1; 
      $monkey={ count => 0 };
   }elsif($line=~/Starting\s+items:\s+(.*)/){
     my(@items) = split(/,\s/, $1);
@@ -35,7 +31,7 @@ while(<DATA>){
   }
 }
 
-# we can use a worry level of mod (product of test values) ... 
+# we can use a worry level of mod (product of test values) ... anything larger is just a waste of storage
 my($prod)=1;
 map {$prod *= $_->{test}} @monkeys;
 
@@ -48,7 +44,7 @@ for(1..10000){
       my($new);
       eval $monkey->{operation};
       # $new = int($new/3); #  comment out for Pt2
-      $new = $new % $prod;
+      $new = $new % $prod; # <- the magic happens here.
       if($new % $monkey->{test}){
         push @{$monkeys[$monkey->{false}]->{items}},$new;
       }else{
