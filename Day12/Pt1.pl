@@ -42,7 +42,6 @@ print $end->{distance};
 sub findRoutes{
   my($start)=shift;
   my(@q);
-  $start->{parent}=undef;
   $start->{distance}=0;
   unshift(@q,$start);
   while($#q >=0){
@@ -59,10 +58,10 @@ sub findRoutes{
         unless(($w->{x}<0)||($w->{y}<0)||($w->{y}>$#g)||($w->{x}>$#{$g[$w->{y}]})){
           # check we didn;t process this location already
           unless($g[$w->{y}][$w->{x}]->{visited}){
+            # check it isnt too big a step up
             if((ord($g[$w->{y}][$w->{x}]->{height})-ord($g[$v->{y}][$v->{x}]->{height}))<=1){
               $g[$w->{y}][$w->{x}]->{visited} = 1;
               $w->{distance}=$v->{distance}+1;
-              $w->{parent} = $v;
               push(@q,$w);
             }
           }
