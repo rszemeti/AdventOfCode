@@ -41,7 +41,6 @@ print $end->{distance};
 
 sub findRoutes{
   my($start)=shift;
-  print Dumper($start);
   my(@q);
   $start->{parent}=undef;
   $start->{distance}=0;
@@ -49,10 +48,8 @@ sub findRoutes{
   while($#q >=0){
     my($v)=shift(@q);
     if($g[$v->{y}][$v->{x}]->{label} eq 'E'){
-      print "found the end\n";
        return $v;
-    }else{
-      print "trying edges of $v->{x}, $v->{y}\n";
+    }else{;
       foreach(@edges){
         my($edge)=$_;
         my($w)={};
@@ -64,16 +61,11 @@ sub findRoutes{
           unless($g[$w->{y}][$w->{x}]->{visited}){
             if((ord($g[$w->{y}][$w->{x}]->{height})-ord($g[$v->{y}][$v->{x}]->{height}))<=1){
               $g[$w->{y}][$w->{x}]->{visited} = 1;
-              print "queuing $w->{x}, $w->{y}\n";
               $w->{distance}=$v->{distance}+1;
               $w->{parent} = $v;
               push(@q,$w);
-            }else{
-              print "rejecting move from $v->{x}, $v->{y} to $w->{x}, $w->{y}\n";
             }
           }
-        }else{
-          print "$w->{x}, $w->{y} is an edge\n";
         }
       }
     }
