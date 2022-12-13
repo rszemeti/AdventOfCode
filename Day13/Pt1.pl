@@ -23,19 +23,19 @@ while($#stack >=1){
   # print "\n== Pair $count ==\n\n";
   my($left)=shift @stack;
   my($right)=shift @stack;;
-  if(compare($left,$right)==1){
+  if(compare($left,$right)== -1){
     $score+=$count;
   }
 }
 
 print $score;
 
-# returns -1 for wrong order, 0 for keep checking, 1 for right order
+# returns 1 for wrong order, 0 for keep checking, -1 for right order (just like the <=> operator)
 sub compare{
   my($left,$right)=@_;
   my($tl)= scalar $left;
   my($tr)= scalar $right;
-  # print " Compare $left, $right\n";
+  #print " Compare $left, $right\n";
   if(($tl=~ /ARRAY/) && ($tr =~ /ARRAY/)){
     while(($#{$left}>=0) && ($#{$right}>=0)){
       my($l)=shift @{$left};
@@ -47,25 +47,24 @@ sub compare{
     }
     if(($#{$left} >=0) && ($#{$right} < 0)){
      # print "  Left side ran out of items, so inputs are in the right order\n";
-      return -1;
+      return 1;
     }
     if(($#{$right} >=0) && ($#{$left} < 0)){
       # print "  Right side ran out of items, so inputs are in the wrong order\n";
-      return 1;
+      return -1;
     }
     return 0;
   }elsif( $left=~/^\d+$/  && $right=~/^\d+$/){
     #two ints
     if($right<$left){
-     # print "  Right side is smaller, so inputs are in the wrong order\n";
-      return -1;
+    #print "  Right side is smaller, so inputs are in the wrong order\n";
+      return 1;
     }elsif($left<$right){
      # print "  Left side is smaller, so inputs are in the right order\n";
-      return 1;
+      return -1;
     }else{
       return 0;
     }
-    
   }else{
     if($left=~/^\d+$/){
       return compare([$left],$right);
@@ -75,7 +74,6 @@ sub compare{
   }
   return 0;
 }
-
 
 __DATA__
 [[[[8,6]],[8,[7],[6,7,6,2,4]],10,[[1,7,9],7,[7,9]]],[[4,[],[10,5],[5,4,7],5],8,9,[[5,3,3,6,9],[9,5,10],8],[[0,6,9],[8],4,6,8]]]

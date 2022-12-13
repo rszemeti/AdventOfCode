@@ -20,7 +20,7 @@ push @stack , "[[6]]";
 
 my($pt2)=1;
 my($i)=0;
-foreach( reverse sort { compare(eval($a),eval($b))} @stack){
+foreach( sort { compare(eval($a),eval($b))} @stack){
   $i++;
   # print "$_\n";
   if($_ eq "[[2]]"){
@@ -35,7 +35,7 @@ foreach( reverse sort { compare(eval($a),eval($b))} @stack){
 
 print $pt2;
 
-# returns -1 for wrong order, 0 for keep checking, 1 for right order
+# returns 1 for wrong order, 0 for keep checking, -1 for right order (just like the <=> operator)
 sub compare{
   my($left,$right)=@_;
   my($tl)= scalar $left;
@@ -52,25 +52,24 @@ sub compare{
     }
     if(($#{$left} >=0) && ($#{$right} < 0)){
      # print "  Left side ran out of items, so inputs are in the right order\n";
-      return -1;
+      return 1;
     }
     if(($#{$right} >=0) && ($#{$left} < 0)){
       # print "  Right side ran out of items, so inputs are in the wrong order\n";
-      return 1;
+      return -1;
     }
     return 0;
   }elsif( $left=~/^\d+$/  && $right=~/^\d+$/){
     #two ints
     if($right<$left){
     #print "  Right side is smaller, so inputs are in the wrong order\n";
-      return -1;
+      return 1;
     }elsif($left<$right){
      # print "  Left side is smaller, so inputs are in the right order\n";
-      return 1;
+      return -1;
     }else{
       return 0;
     }
-    
   }else{
     if($left=~/^\d+$/){
       return compare([$left],$right);
