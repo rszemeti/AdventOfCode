@@ -3,6 +3,8 @@
 use warnings;
 use strict;
 
+my($start)= time;
+
 my($search)=4000000; # max search in X or Y
 
 my(@sensors);
@@ -44,10 +46,13 @@ sub check{
       my($bx)=$x+$inc->[0];
       my($by)=$y+$inc->[1];
       $adjacent += notCovered($bx,$by);
+      last if $adjacent;
     }
     if($adjacent==0){
       print "Found!  $x,$y\n";
       print "Freq is: ". ($x*$search+$y)."\n";
+      my $duration = time - $start;
+      print "Execution time: $duration s\n";
       exit 1;
     }
   }
@@ -64,7 +69,6 @@ sub notCovered{
   }
   return 1;
 }
-
 
 __DATA__
 Sensor at x=2983166, y=2813277: closest beacon is at x=3152133, y=2932891
