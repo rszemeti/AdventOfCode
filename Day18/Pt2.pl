@@ -40,6 +40,7 @@ my(@search)=(
 
 fillWithWater();
 
+# just work out which faces are in contact with water.
 my($total)=0;
 foreach(@list){
   my($rock)=$_;
@@ -47,6 +48,7 @@ foreach(@list){
     my($x)=$rock->{x}+$_->[0];
     my($y)=$rock->{y}+$_->[1];
     my($z)=$rock->{z}+$_->[2];
+    # be careful we don't fall foul of -ve indices!
     if($x<0 || $y<0 || $z <0 ){
       print Dumper($rock);
       die;
