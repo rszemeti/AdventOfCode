@@ -2,26 +2,23 @@
 
 use warnings;
 use strict;
-use Storable qw/dclone/;
-use bigint;
 
 use Data::Dumper;
 
-my %n;
+my (%m);
 
 while(<DATA>){
  chomp;
   my($line)=$_;
   if($line =~ /^\w+:\s\d+$/){
     my($key,$val)= $line =~ /^(\w+):\s(\d+)$/;
-    $n{$key}={ val => $val };
+    $m{$key}={ val => $val };
   }else{
     my($key, $val1, $op, $val2) = $line =~ /^(\w+):\s(\w+)\s([\+\-\*\/\=])\s(\w+)$/;
-    $n{$key} = { val1 => $val1, val2 => $val2, op => $op };
+    $m{$key} = { val1 => $val1, val2 => $val2, op => $op };
   }
 }
 
-my (%m) = %{dclone(\%n)};
 delete $m{humn};
 $m{root}{op}='=';
 
@@ -42,12 +39,11 @@ while(! exists $m{humn}{val} ){
   reverseProc();
 }
 
-
 print $m{humn}{val};
 
+exit 1;
 
 sub proc{
-
  foreach(keys %m){
   my($k)=$_;
   next if ($k =~ /\d+/);
@@ -75,23 +71,19 @@ sub proc{
       }elsif($m{$k}->{op} eq '/'){
         $m{$k}->{val} = $m{$k}->{val1}/$m{$k}->{val2};
       }
-      elsif($m{$k}->{op} eq '='){
- 
-      }
     }
   }
  }
- return 1;
 }
 
 
 sub reverseProc{
 
  foreach(keys %m){
-  my($k)=$_;
-  next if ($k =~ /\d+/);
+   my($k)=$_;
+   next if ($k =~ /\d+/);
   
-  if( exists $m{$k}{val}){
+   if( exists $m{$k}{val}){
   
     if(defined $m{$k}->{val1} && $m{$k}->{val1}=~/[a-z]+/){
 
@@ -105,13 +97,6 @@ sub reverseProc{
             $m{$k}->{val1} = $m{$k}->{val}/$m{$k}->{val2};
           }elsif($m{$k}->{op} eq '/'){
             $m{$k}->{val1} = $m{$k}->{val}*$m{$k}->{val2};
-          }
-          elsif($m{$k}->{op} eq '='){
-
-          }
-          if(int($m{$k}->{val1}) != $m{$k}->{val1}){
-            print Dumper($m{$k});
-            die;
           }
           $m{$k1}->{val} = $m{$k}->{val1};
       }
@@ -129,18 +114,12 @@ sub reverseProc{
           }elsif($m{$k}->{op} eq '/'){
             $m{$k}->{val2} = $m{$k}->{val1}/$m{$k}->{val};
           }
-          elsif($m{$k}->{op} eq '='){
-
-          }
           $m{$k2}->{val} = $m{$k}->{val2};
-      }
-    }
-    
-  }
+       }
+     }
+   }
  }
- return 1;
 }
-
 
 __DATA__
 grcf: 2
