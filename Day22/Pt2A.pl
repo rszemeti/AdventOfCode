@@ -268,33 +268,20 @@ sub translateCube{
   }
   
   if($isEdge){
-    print "current face is $cfr,$cfc, position $r,$c with direction $dir\n";
     my($dest)= $faces[$cfr][$cfc]{edges}[$dir];
     my($s)= $sense[$dir][$dest->[1]];
-    print "\n\ndest edge: ".$dest->[1]." on face ".$dest->[0][0].",".$dest->[0][1]."\n";
-    print "sense: $s\n";
     # establish coords of top left corner
     my($cr)=$cfr*$cubeSize;
     my($cc)=$cfc*$cubeSize;
-    my($co)= $c % $cubeSize;
-    my($ro) = $r % $cubeSize;
-    
-    print "ro $ro, co $co, current direction $curDir\n";
+  
     my($o)=($r % $cubeSize)*(($curDir+1) % 2)+($c % $cubeSize)*($curDir % 2);
-    print "source corner is $cr,$cc\n";
-    print "source position is $r,$c\n";
-    print "source offset is $o\n";
-    # translation
 
     my($dr)=$cubeSize*$dest->[0][0];
     my($dc)=$cubeSize*$dest->[0][1];
-    print "dest corner is $dr,$dc\n";
-
     $dir = ($dest->[1]+2) % 4;
-    print "dest edge: $dest->[1], entry direction: $dir\n";
+
     if($dest->[1] == 0){
       $dc += $cubeSize-1;
-      print "dc is $dc\n";
       if($s==1){
         $dr = $dr+$o;
       }else{
@@ -302,21 +289,18 @@ sub translateCube{
       }
     }elsif($dest->[1] == 1){
       $dr += $cubeSize-1;
-      print "dr is $dr\n";
       if($s==1){
         $dc = $dc+$o;
       }else{
         $dc = $dc+$cubeSize-1-$o;
       }
     }elsif($dest->[1] == 2){
-      print "dc is $dc\n";
       if($s==1){
         $dr = $dr+$o;
       }else{
         $dr = $dr+$cubeSize-1-$o;
       }
     }elsif($dest->[1] == 3){
-      print "dr is $dr\n";
       if($s==1){
         $dc = $dc+$o;
       }else{
@@ -325,7 +309,6 @@ sub translateCube{
     }
     $nr=$dr;
     $nc=$dc;
-    print "suggesting move to $nr,$nc,$dir\n";
   }
   
   return($nr,$nc,$dir);
