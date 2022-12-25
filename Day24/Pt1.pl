@@ -5,32 +5,25 @@ use strict;
 
 use Data::Dumper;
 
-my (@map);
 my(@bl);
 
-my($r)=0;
 my($w,$h);
 
 while(<>){
  chomp;
+ next unless $_;
  my(@tks)=(split(//,$_));
  if(!defined $w){
    $w = $#tks+1;
  }
- #print Dumper(\@tks);
  for(0..$#tks){
    my($c)=$_;
    if($tks[$c] =~ /[<>\^v]/){
-     push(@bl,{r=>$r, c=>$c, dir=>$tks[$c]});
+     push(@bl,{r=>$h, c=>$c, dir=>$tks[$c]});
    }
  }
- push(@map,[split(//,$_)]);
- $r++;
+ $h++;
 }
-
-$h=$r;
-
-print "Dimesnions are $w x $h\n";
 
 my($dirs)={
   ">" => [0,1],
@@ -41,12 +34,10 @@ my($dirs)={
 
 my(@layers);
 
-foreach(0..1000){
-  push(@layers,makeLayer());
-  moveBlizzards();
-}
+# Start off with the initial state
+push(@layers,makeLayer());
 
-# convenience var for L,R,U,D a,d stand still as a possible option
+# convenience var for L,R,U,D and stand still as a possible options
 my(@edges) = ( 
   [-1, 0],
   [ 1, 0],
@@ -56,11 +47,13 @@ my(@edges) = (
 );
 
 my($e1)=findRoutes({t=>0,r=>0,c=>1},'F');
-print Dumper($e1);
+print "Reached destination in $e1->{t} minutes\n";
 my($e2)=findRoutes($e1,'S');
-print Dumper($e2);
+print "Returned to start in $e2->{t} minutes\n";
 my($e3)=findRoutes($e2,'F');
-print Dumper($e3);
+print "Reached destination again in $e3->{t} minutes\n";
+
+exit 1;
 
 # basic BFS, moving forward one layer each cycle, because time always moves forward whether you like it or not.
 sub findRoutes{
@@ -77,6 +70,11 @@ sub findRoutes{
       $w->{r}=$v->{r}+$edge->[0];
       $w->{c}=$v->{c}+$edge->[1];
       $w->{t}=$v->{t}+1;
+      # add another layer to the time stack iff needed
+      if($w->{t} >= $#layers-1){
+        moveBlizzards();
+        push(@layers,makeLayer());
+      }
       if($w->{t}<$#layers && $w->{r}>=0 && $w->{r}<$h && $w->{c}>0 && $w->{c}<$w ) {
         if( defined $layers[$w->{t}][$w->{r}][$w->{c}] &&  $layers[$w->{t}][$w->{r}][$w->{c}] eq $goal){
           return $w
@@ -94,19 +92,17 @@ sub findRoutes{
 sub moveBlizzards{
   foreach(@bl){
     my($b)=$_;
-    my($dir)=$dirs->{$b->{dir}};
-    my($nr)=$b->{r} + $dir->[0];
-    my($nc)=$b->{c} + $dir->[1];
-  
-    # bounce reanimate off opposite the walls
-    if($nr>=$h-1){ $nr=1 }
-    if($nr<1 ){ $nr=$h-2 }
-    if($nc>=$w-1 ){ $nc=1 }
-    if($nc<1 ){ $nc=$w-2 }
     
-    $b->{r}=$nr;
-    $b->{c}=$nc;
-    $map[$nr][$nc]=$b->{dir};
+    #move
+    my($dir)=$dirs->{$b->{dir}};
+    $b->{r} += $dir->[0];
+    $b->{c} += $dir->[1];
+  
+    # reanimate off opposite walls
+    if($b->{r}>=$h-1){ $b->{r}=1 }
+    if($b->{r}<1 ){ $b->{r}=$h-2 }
+    if($b->{c}>=$w-1 ){ $b->{c}=1 }
+    if($b->{c}<1 ){ $b->{c}=$w-2 }
   }
 }
 
@@ -122,13 +118,14 @@ sub makeLayer{
     $l[0][$c]='#';
     $l[$h-1][$c]='#';
   }
-  $l[0][1]='S';
-  $l[$h-1][$w-2]='F';
   
   foreach(@bl){
     my($b)=$_;
     $l[$b->{r}][$b->{c}]='#';
   }
+  
+  $l[0][1]='S';
+  $l[$h-1][$w-2]='F';
   
   return \@l;
 }
