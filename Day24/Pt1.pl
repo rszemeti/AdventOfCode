@@ -3,8 +3,6 @@
 use warnings;
 use strict;
 
-
-
 use Data::Dumper;
 
 my (@map);
@@ -30,7 +28,7 @@ while(<>){
  $r++;
 }
 
-$h =$r;
+$h=$r;
 
 print "Dimesnions are $w x $h\n";
 
@@ -48,8 +46,7 @@ foreach(0..1000){
   moveBlizzards();
 }
 
-
-# convenience var for L,R,U,D
+# convenience var for L,R,U,D a,d stand still as a possible option
 my(@edges) = ( 
   [-1, 0],
   [ 1, 0],
@@ -65,7 +62,7 @@ print Dumper($e2);
 my($e3)=findRoutes($e2,'F');
 print Dumper($e3);
 
-
+# basic BFS, moving forward one layer each cycle, because time always moves forward whether you like it or not.
 sub findRoutes{
   my($start)=shift;
   my($goal)=shift;
@@ -74,38 +71,25 @@ sub findRoutes{
   unshift(@q,$start);
   while($#q >=0){
     my($v)=shift(@q);
-    if($layers[$v->{t}][$v->{r}][$v->{c}] eq $goal){
-      print "found it";
-      exit 0;
-       return $v;
-    }else{
-      foreach(@edges){
-        my($edge)=$_;
-        my($w)={};
-        $w->{r}=$v->{r}+$edge->[0];
-        $w->{c}=$v->{c}+$edge->[1];
-        $w->{t}=$v->{t}+1;
-        if($w->{t}<$#layers && $w->{r}>=0 && $w->{r}<$h && $w->{c}>0 && $w->{c}<$w ) {
-          # check we didn;t process this location already
-          #print "$w->{t}, $w->{r}, $w->{c} ".$layers[$w->{t}][$w->{r}][$w->{c}]."\n";
-          if( defined $layers[$w->{t}][$w->{r}][$w->{c}] &&  $layers[$w->{t}][$w->{r}][$w->{c}] eq $goal){
-            return $w
-          }
-          unless(defined $layers[$w->{t}][$w->{r}][$w->{c}] && $layers[$w->{t}][$w->{r}][$w->{c}] eq "#"){
-              $layers[$w->{t}][$w->{r}][$w->{c}]='#';
-              $w->{distance}=$v->{distance}+1;
-              push(@q,$w);
-          }
+    foreach(@edges){
+      my($edge)=$_;
+      my($w)={};
+      $w->{r}=$v->{r}+$edge->[0];
+      $w->{c}=$v->{c}+$edge->[1];
+      $w->{t}=$v->{t}+1;
+      if($w->{t}<$#layers && $w->{r}>=0 && $w->{r}<$h && $w->{c}>0 && $w->{c}<$w ) {
+        if( defined $layers[$w->{t}][$w->{r}][$w->{c}] &&  $layers[$w->{t}][$w->{r}][$w->{c}] eq $goal){
+          return $w
+        }
+        unless(defined $layers[$w->{t}][$w->{r}][$w->{c}] && $layers[$w->{t}][$w->{r}][$w->{c}] eq "#"){
+            $layers[$w->{t}][$w->{r}][$w->{c}]='#';
+            $w->{distance}=$v->{distance}+1;
+            push(@q,$w);
         }
       }
     }
   }
 }
-
-
-#for(0..17){
-#  showMap($layers[$_]);
-#}
 
 sub moveBlizzards{
   foreach(@bl){
@@ -113,7 +97,8 @@ sub moveBlizzards{
     my($dir)=$dirs->{$b->{dir}};
     my($nr)=$b->{r} + $dir->[0];
     my($nc)=$b->{c} + $dir->[1];
-    
+  
+    # bounce reanimate off opposite the walls
     if($nr>=$h-1){ $nr=1 }
     if($nr<1 ){ $nr=$h-2 }
     if($nc>=$w-1 ){ $nc=1 }
