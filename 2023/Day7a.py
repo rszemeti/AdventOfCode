@@ -1,7 +1,7 @@
 import re
 
 class Hand:
-
+    # map number of cards of any label to a type
     tests = [
         (5,7),
         (4,6),
@@ -10,53 +10,42 @@ class Hand:
         (1,1)
     ]
     def __init__(self, cards, bid):
-        self.scores ={}
-        self.score=None
+        self.types ={}
+        self.type=None
         self.cards = cards
         self.bid = int(bid)
         for card in self.cards:
-            if card in self.scores:
-                self.scores[card]+= 1
+            if card in self.types:
+                self.types[card]+= 1
             else:
-                self.scores[card] = 1
+                self.types[card] = 1
         self.assess()
 
     def find_kind(self,n,s):
         count=0
-        for k in self.scores:
-            if k!="J":
-                if self.scores[k]+self.scores["J"]==n:
-                    if self.score==None:
-                        self.score=s
-                    count +=1
+        for k in self.types:
+            if self.types[k]==n:
+                if self.type==None:
+                    self.type=s
+                count +=1
                 
         return count
                 
     def assess(self):
         for test in self.tests:
             self.find_kind(test[0],test[1])
-            if self.score:
+            if self.type:
                 break
             
         # see if 3ofkind can be elevated to full house
-        if self.score==4:
+        if self.type==4:
             if self.find_kind(2,None):
-                self.score=5
+                self.type=5
         # and check if 1 pair can be elevated to two pair
-        elif self.score==2:
+        elif self.type==2:
             if self.find_kind(2,None)==2:
-                self.score=3
-
-
-        
-def beats(h1,h2):
-    if(h1.score > h2.score):
-        return True
-    if(h1.score == h2.score):
-        #tied
-        return tiebreak(h1.cards,h2.cards)
-    return False
-
+                self.type=3
+                
 values = {
     "A": 14,
     "K": 13,
@@ -72,6 +61,13 @@ values = {
     "3": 3,
     "2": 2
 }
+        
+def beats(h1,h2):
+    if(h1.type > h2.type):
+        return True
+    if(h1.type == h2.type):
+        return tiebreak(h1.cards,h2.cards)
+    return False
 
 def tiebreak(c1,c2):
     for n in range(0,5):
@@ -90,15 +86,11 @@ with open(filename) as file:
         m = re.match("^(\w+)\s+(\d+)",line)
         if(m):
             hands.append(Hand(m.group(1),m.group(2)))
-            #print(line)
-
+            
+    total=0
     for h1 in hands:
         h1.rank = sum(beats(h1,h2)for h2 in hands)+1
-        
-    total=0
-    for hand in hands:
-        #print("%s: %s -> %s" % (c,hand.cards,hand.score))
-        total += hand.bid * hand.rank
+        total += h1.bid * h1.rank
 
     print(total)
 

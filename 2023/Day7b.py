@@ -11,7 +11,7 @@ class Hand:
     ]
     def __init__(self, cards, bid):
         self.scores ={}
-        self.score=None
+        self.type=None
         self.cards = cards
         self.bid = int(bid)
         for card in self.cards:
@@ -19,23 +19,19 @@ class Hand:
                 self.scores[card]+= 1
             else:
                 self.scores[card] = 1
-        if "J" in self.scores:
-            jokers = self.scores["J"]
-            self.scores.pop("J")
+        if "J" in self.scores and self.scores["J"]<5:
+            jokers = self.scores.pop("J")
             if(len(self.scores) >0):
                 m = max(self.scores, key=self.scores.get)
                 self.scores[m]+=jokers
-            else:
-                # handle five jokers edge case
-                self.scores["J"]=5
         self.assess()
 
     def find_kind(self,n,s):
         count=0
         for k in self.scores:
             if self.scores[k]==n:
-                if self.score==None:
-                    self.score=s
+                if self.type==None:
+                    self.type=s
                 count +=1
                 
         return count
@@ -43,24 +39,17 @@ class Hand:
     def assess(self):
         for test in self.tests:
             self.find_kind(test[0],test[1])
-            if self.score:
+            if self.type:
                 break
             
         # see if 3ofkind can be elevated to full house
-        if self.score==4:
+        if self.type==4:
             if self.find_kind(2,None):
-                self.score=5
+                self.type=5
         # and check if 1 pair can be elevated to two pair
-        elif self.score==2:
+        elif self.type==2:
             if self.find_kind(2,None)==2:
-                self.score=3
-        
-def beats(h1,h2):
-    if(h1.score > h2.score):
-        return True
-    if(h1.score == h2.score):
-        return tiebreak(h1.cards,h2.cards)
-    return False
+                self.type=3
 
 values = {
     "A": 14,
@@ -76,8 +65,14 @@ values = {
     "4": 4,
     "3": 3,
     "2": 2,
-    "1": 1
 }
+        
+def beats(h1,h2):
+    if(h1.type > h2.type):
+        return True
+    if(h1.type == h2.type):
+        return tiebreak(h1.cards,h2.cards)
+    return False
 
 def tiebreak(c1,c2):
     for n in range(0,5):
