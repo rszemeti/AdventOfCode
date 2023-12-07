@@ -14,25 +14,28 @@ class Hand:
         self.score=None
         self.cards = cards
         self.bid = int(bid)
-        self.scores["J"]=0
         for card in self.cards:
             if card in self.scores:
                 self.scores[card]+= 1
             else:
                 self.scores[card] = 1
-                
+        if "J" in self.scores:
+            jokers = self.scores["J"]
+            self.scores.pop("J")
+            if(len(self.scores) >0):
+                m = max(self.scores, key=self.scores.get)
+                self.scores[m]+=jokers
+            else:
+                # handle five jokers edge case
+                self.scores["J"]=5
         self.assess()
 
     def find_kind(self,n,s):
         count=0
         for k in self.scores:
-            jokers=0
-            if k!="J":
-                jokers=self.scores["J"]
-            if self.scores[k]+jokers==n:
+            if self.scores[k]==n:
                 if self.score==None:
                     self.score=s
-                    self.scores["J"]=0
                 count +=1
                 
         return count
@@ -51,14 +54,11 @@ class Hand:
         elif self.score==2:
             if self.find_kind(2,None)==2:
                 self.score=3
-
-
         
 def beats(h1,h2):
     if(h1.score > h2.score):
         return True
     if(h1.score == h2.score):
-        #tied
         return tiebreak(h1.cards,h2.cards)
     return False
 
@@ -66,7 +66,7 @@ values = {
     "A": 14,
     "K": 13,
     "Q": 12,
-    "J": 1,
+    "J": 0,
     "T": 10,
     "9": 9,
     "8": 8,
@@ -75,7 +75,8 @@ values = {
     "5": 5,
     "4": 4,
     "3": 3,
-    "2": 2
+    "2": 2,
+    "1": 1
 }
 
 def tiebreak(c1,c2):
@@ -96,18 +97,10 @@ with open(filename) as file:
         if(m):
             hands.append(Hand(m.group(1),m.group(2)))
 
+    total=0
     for h1 in hands:
         h1.rank = sum(beats(h1,h2)for h2 in hands)+1
-
-    hands.sort(key=lambda h: h.rank, reverse=True)
-
-    for h1 in hands:
-        print(h1.cards,h1.rank,h1.score)
-        
-    total=0
-    for hand in hands:
-        #print("%s: %s -> %s" % (c,hand.cards,hand.score))
-        total += hand.bid * hand.rank
+        total+= h1.bid * h1.rank
 
     print(total)
 
