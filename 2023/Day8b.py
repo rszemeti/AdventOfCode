@@ -10,7 +10,6 @@ def find_distance(node):
     c=1
     while True:
         node=map[node][cmds[p]]
-        #print("turned %s, got %s" % (cmds[p],node))
         if node.endswith("Z"):
             print(c)
             return c
@@ -31,7 +30,8 @@ with open(filename) as file:
     for n in map:
         if n.endswith("A"):
             ghosts.append(find_distance(n))
- 
+
+    # use least common multiple ... obtained from product // greatest common denom.
     lcm = 1
     for i in ghosts:
         lcm = lcm*i//gcd(lcm, i)
