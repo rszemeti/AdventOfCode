@@ -18,66 +18,53 @@ class Map:
     def add_range(self, dest,source,span):
         self.points.append([dest,source,span])
 
-    def map(self,n):
-        for point in self.points:
-            #print("n is %s" % n)
-            #print(point)
-            if(n >= point[1]) & (n <= point[1]+point[2]):
-                d = point[0] + n - point[1]
-                #print("found %s" % d)
-                return d
+    def get_overlap(self,a,b):
+        start1= a[0]
+        length1 =a[1]
 
-        #print("not found %s" % n)
-        return n
+        start2= b[1]
+        length2 =b[2]
 
-    # given an input range in the form (dest,(n,span))
-    # returns list output ranges in the same form
-    def map_range(self,n):
-        print(n)
-        lor =[]
-        offs=0
+        end1 = start1 + length1 - 1
+        end2 = start2 + length2 - 1
+
+        overlap_start = max(start1, start2)
+        overlap_end = min(end1, end2)
+
+        if overlap_start <= overlap_end:
+            overlap_length = overlap_end - overlap_start + 1
+            return (overlap_start, overlap_length)
         
-        for point in self.points:
-            print(point)
-            pointer = n[1]+offs
-            start_p = point[1]
-            end_p = point[1]+point[2]-1
-            start_n= n[1]+offs
-            end_n = n[1]+n[2]
-            ol_start=max(start_p,start_n)
-            ol_end=min(end_p,end_n)
-            span=ol_end-ol_start
-            print("pointer is %s, start is %s and end is %s" % (pointer, start_p,end_p))
-            if(pointer >= start_p) & (pointer <= end_p ):
-                print("pointer in range, from %s to %s, span %s" % (ol_start,ol_end,span))
-                if ol_start>pointer:
-                    #add padding of 1:1 mapping of the right length
-                    print("adding padding")
-                    lor.append((pointer, pointer, ol_start-pointer))
-                
-                lor.append((n[0]+offs, start_n, span))  
+        return None
 
-        #print("not found %s" % n)
+    # given an input range in the form (n,span)
+    # returns a list of output ranges in the same form
+    def map_range(self,n):
+        lor =[]
+        for point in self.points:
+            overlap = self.get_overlap(n,point)
+            if overlap:
+                new = [point[0]+overlap[0]-point[1],overlap[1]]
+                lor.append(new)
+
         if len(lor)==0:
             lor.append(n)
         return lor
 
 def find(name,n):
-    #print("%s, %s" % (name,n))
     l_of_ra = maps[name].map_range(n)
     if maps[name].mapto=="location":
         return l_of_ra
     else:
         l=[]
         for ra in l_of_ra:
-            l.append(find(maps[name].mapto,ra))
+            l += find(maps[name].mapto,ra)
         return l
 
 def search(items,name):
     low=None
     for n in items:
-        locs =find("seed",(n[0],n[0],n[1]))
-        print(len(locs))
+        locs =find(name,[n[0],n[1]])
         for loc in locs:
             if (low == None) or (low > loc[0]) :
                 low = loc[0]
@@ -89,7 +76,7 @@ maps={}
 low=None
 
 
-filename="Day5_sample.txt"
+filename="Day5.txt"
 with open(filename) as file:
     for line in file:
         if line.startswith("seeds:"):
@@ -103,7 +90,7 @@ with open(filename) as file:
             
     low = search(seeds,"seed")
             
-    print(low)
+    print("Lowest is %s" % low)
             
 
 

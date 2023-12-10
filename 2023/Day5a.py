@@ -43,7 +43,7 @@ def search(items,name):
 seeds=[]
 maps={}
 
-filename="Day5.txt"
+filename="Day5_sample.txt"
 with open(filename) as file:
     for line in file:
         if line.startswith("seeds:"):
