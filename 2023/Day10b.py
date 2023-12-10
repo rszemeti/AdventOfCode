@@ -57,17 +57,14 @@ def mark(curDir, curLoc, t, rule):
     ry = curLoc[1]+rule[curDir][1]
     if(rx >= 0 and rx < len(t)) and (ry >= 0 and ry < len(t[rx])):
         if t[rx][ry]==".":
-            #t[rx][ry]=map[curLoc[0]][curLoc[1]]
             t[rx][ry]="I"
     pmd = curDir
     m = move(curDir, curLoc, None)
     if pmd != globals()['curDir']:
-        #print("direction chnaged %s %s" % (rx,ry))
         rx = curLoc[0]+rule[curDir][0]
         ry = curLoc[1]+rule[curDir][1]
         if(rx >= 0 and rx < len(t)) and (ry >= 0 and ry < len(t[rx])):
             if t[rx][ry]==".":
-                #t[rx][ry]=map[curLoc[0]][curLoc[1]]
                 t[rx][ry]="I"
         
     return m
@@ -81,28 +78,6 @@ def fill(t):
                 if t[x][y+1]==".":
                     #print("Changing %s,%s" % (x,y))
                     t[x][y+1]="I"
-                    changed=True
-        #fill right to left
-        for y in range(len(t[x])-1,1,-1):
-            if t[x][y]=="I":
-                if t[x][y-1]==".":
-                    #print("Changing %s,%s" % (x,y))
-                    t[x][y-1]="I"
-                    changed=True
-    for y in range(0,len(t[0])):
-        #fill down
-        for x in range(0,len(t)-1):
-            if t[x][y]=="I":
-                if t[x+1][y]==".":
-                    #print("Changing %s,%s" % (x,y))
-                    t[x+1][y]="I"
-                    changed=True
-        #up
-        for x in range(len(t)-1,1,-1):
-            if t[x][y]=="I":
-                if t[x-1][y]==".":
-                    #print("Changing %s,%s" % (x,y))
-                    t[x-1][y]="I"
                     changed=True              
     return changed
 
@@ -121,7 +96,8 @@ with open(filename) as file:
     for line in file:
         map.append([*line.strip()])
         track.append(["."]*len(map[0]))
-        
+
+    # find start point 
     s=None
     for x in range(0,len(map)):
         for y in range(0,len(map[x])):
@@ -129,7 +105,6 @@ with open(filename) as file:
                 s=[x,y]
                 break
 
-    print(s)
     curDir=None
     curLoc=s
     #find initial direction to move
@@ -139,23 +114,24 @@ with open(filename) as file:
         c = map[tx][ty]
         if d in pipes[c]:
             curDir=d
+            
     #run around the perimeter and mark the track.
     initDir=curDir     
-    distance=1
+
     while move(curDir,curLoc,track):
-        distance +=1
+        pass
 
     #run around the track marking any inner points
     curLoc=s
     curDir=initDir
     while mark(curDir,curLoc,track,left):
-        distance +=1
+        pass
 
-    # fill in 
+    # fill in  
     while(fill(track)):
-        foo=1
+        pass
     
-    # print_map(track)
+    #print_map(track)
 
     print(count_chars("I",track))
 
