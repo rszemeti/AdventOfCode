@@ -14,23 +14,23 @@ with open("Day11.txt") as file:
             map.append([*line.strip()])
 
     empty_cols=[True] * len(map)
-    for x in range(0,len(map)):
-        for y in range(0, len(map[x])):
-            if map[x][y] == "#":
-                empty_cols[y]=False
+    for row in map:
+        for i,cell in enumerate(row):
+            if cell == "#":
+                empty_cols[i]=False
     
-    for x in range(0,len(map)):
+    for i,row in enumerate(map):
         new=[]
-        for y in range(0, len(map[x])):
-            new.append(map[x][y])
+        for y in range(0, len(row)):
+            new.append(row[y])
             if empty_cols[y]:
                 new.append(".")
-        map[x]=new
+        map[i]=new
 
     stars=[]
-    for x in range(0,len(map)):
-        for y in range(0, len(map[x])):
-            if map[x][y]=="#":
+    for x,row in enumerate(map):
+        for y,cell in enumerate(row):
+            if cell=="#":
                 stars.append((x,y))
 
     pairs = list(itertools.combinations(stars, 2))

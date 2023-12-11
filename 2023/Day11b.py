@@ -20,9 +20,9 @@ with open("Day11.txt") as file:
                 empty_rows[x]=False
 
     stars=[]
-    for x in range(0,len(map)):
-        for y in range(0, len(map[x])):
-            if map[x][y]=="#":
+    for x,row in enumerate(map):
+        for y,cell in enumerate(row):
+            if cell=="#":
                 stars.append((x,y))
 
     pairs = list(itertools.combinations(stars, 2))
