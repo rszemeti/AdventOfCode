@@ -3,7 +3,7 @@ import requests
 from datetime import datetime
 
 # Your session token from the Advent of Code website
-SESSION_TOKEN = "53616c7465645f5f37064e1ada38515f2b2cd6c443a9564dadaf60fdca1e70dab5eeb32baf7225b6d1bdd3dce907b4674aa9b2c60e446aa7357d4d2bb2959df3re"
+SESSION_TOKEN = ""
 
 def fetch_puzzle_input():
     # Get the current day of December
